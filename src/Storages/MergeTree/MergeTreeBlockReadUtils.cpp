@@ -328,7 +328,12 @@ MergeTreeReadTaskColumns getReadTaskColumns(
     NameSet columns_from_previous_steps;
     auto add_step = [&](const PrewhereExprStep & step)
     {
-        Names step_column_names = step.actions->getActionsDAG().getRequiredColumnsNames();
+        Names step_column_names;
+
+        /// Exclude columns that are already read or computed in previous steps
+        for (const auto & name : step.actions->getActionsDAG().getRequiredColumnsNames())
+            if (!columns_from_previous_steps.contains(name))
+                step_column_names.push_back(name);
 
         injectRequiredColumns(
             data_part_info_for_reader, storage_snapshot, with_subcolumns, step_column_names);
@@ -342,6 +347,10 @@ MergeTreeReadTaskColumns getReadTaskColumns(
             columns_to_read_in_step.push_back(name);
             columns_from_previous_steps.insert(name);
         }
+
+        /// Add results of the step to the list of "known" columns so that we don't read or compute them again
+        for (const auto & name : step.actions->getActionsDAG().getNames())
+            columns_from_previous_steps.insert(name);
 
         result.pre_columns.push_back(storage_snapshot->getColumnsByNames(options, columns_to_read_in_step));
     };
