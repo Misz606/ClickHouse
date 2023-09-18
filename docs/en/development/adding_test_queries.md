@@ -11,9 +11,9 @@ ClickHouse has hundreds (or even thousands) of features. Every commit gets check
 
 The core functionality is very well tested, but some corner-cases and different combinations of features can be uncovered with ClickHouse CI.
 
-Most of the bugs/regressions we see happen in that 'grey area' where test coverage is poor.
+Most of the bugs/regressions we see happen are in that 'grey area' where test coverage is poor.
 
-And we are very interested in covering most of the possible scenarios and feature combinations used in real life by tests.
+We are very interested in covering most of the possible scenarios and feature combinations used in real life by tests.
 
 ## Why adding tests
 
